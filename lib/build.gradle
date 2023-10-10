@@ -2,15 +2,37 @@ plugins {
     id 'idea'
     id 'eclipse'
     id 'java-library'
-    id 'edu.wpi.first.GradleRIO' version '2023.+'
+    id 'maven-publish'
+    id 'edu.wpi.first.GradleRIO' version '2023.+' //Try not to update this until 2024, then replace with '2024.+'
 }
 
 apply plugin: 'edu.wpi.first.GradleRIO'
 
-project.version = '1.0.0'
+project.version = '1.0.0' //Change with each subsequent release of packae
 
 repositories {
     mavenCentral()
+}
+
+//Maven Publish with 'gradle publish --options'
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/FRC5411/utility-main-talonLib")
+
+            //Configure this in System Environment Variables
+            credentials {
+                username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+                password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+            }
+        }
+    }
+    publications {
+        gpr(MavenPublication) {
+            from(components.java)
+        }
+    }
 }
 
 dependencies {
